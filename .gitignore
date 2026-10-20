@@ -1,43 +1,72 @@
-# Dependencies
+# ==============================================================================
+# Root .gitignore - Kidney Disease AI Diagnostic Platform
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Environment & Secrets (CRITICAL: Never commit database or API secrets)
+# ------------------------------------------------------------------------------
+.env
+.env.*
+.env*.local
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
+frontend/.env*.local
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# ------------------------------------------------------------------------------
+# 2. Frontend / Node.js
+# ------------------------------------------------------------------------------
 node_modules/
+frontend/node_modules/
 .pnp
 .pnp.js
-
-# Testing
-/coverage
-
-# Next.js
 .next/
+frontend/.next/
 out/
+frontend/out/
 build/
 dist/
+.vercel
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Misc
-.DS_Store
-*.pem
-
-# Python
+# ------------------------------------------------------------------------------
+# 3. Backend / Python
+# ------------------------------------------------------------------------------
 __pycache__/
+backend/**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
 venv/
+.venv/
+env/
 ENV/
-.env
-.env*.local
+backend/venv/
+backend/.venv/
 
-# Database
+# ------------------------------------------------------------------------------
+# 4. Databases & Storage
+# ------------------------------------------------------------------------------
 *.db
 *.sqlite
 *.sqlite3
+kidney_ai.db
+backend/kidney_ai.db
 
-# Large Model files (user can download from Colab release / S3 / Kaggle)
-# Uncomment if model.onnx should not be checked into git
-# backend/model/model.onnx
-
-# IDE
+# ------------------------------------------------------------------------------
+# 5. OS & Editor Artifacts
+# ------------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.pem
 .vscode/
 .idea/
 *.swp
