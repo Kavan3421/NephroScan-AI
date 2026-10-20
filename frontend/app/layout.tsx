@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -8,6 +8,13 @@ export const metadata: Metadata = {
   title: "NephroScan AI | Clinical Radiology Workstation",
   description:
     "Clinical-grade Diagnostic Radiology Workstation for Kidney CT analysis powered by VGG16 Transfer Learning and ONNX Runtime.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#0A0C10",
 };
 
 export default function RootLayout({

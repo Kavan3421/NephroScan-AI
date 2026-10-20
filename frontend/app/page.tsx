@@ -411,26 +411,34 @@ export default function RadiologyWorkstation() {
   const severity = getSeverityBadge(finding);
 
   return (
-    <div className="min-h-screen bg-[#0A0C10] text-slate-100 flex flex-col font-sans selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#0A0C10] text-slate-100 flex flex-col font-sans selection:bg-white selection:text-black overflow-x-hidden">
       {/* A. Header Bar */}
-      <header className="h-14 border-b border-white/10 bg-[#0A0C10] px-6 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded bg-white text-black font-bold">
-            <Activity className="h-4 w-4" />
+      <header className="border-b border-white/10 bg-[#0A0C10] px-3.5 sm:px-6 py-2.5 sm:py-0 sm:h-14 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shrink-0">
+        <div className="flex items-center justify-between sm:justify-start gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded bg-white text-black font-bold shrink-0">
+              <Activity className="h-4 w-4" />
+            </div>
+            <div>
+              <h1 className="text-sm font-semibold tracking-tight text-white flex items-center gap-2">
+                NephroScan AI
+                <span className="hidden md:inline text-xs font-normal text-slate-400">
+                  — Computed Tomography Diagnostic Engine
+                </span>
+              </h1>
+            </div>
           </div>
-          <div>
-            <h1 className="text-sm font-semibold tracking-tight text-white flex items-center gap-2">
-              NephroScan AI
-              <span className="text-xs font-normal text-slate-400">
-                — Computed Tomography Diagnostic Engine
-              </span>
-            </h1>
+
+          {/* Compact Engine Status on Small Mobile */}
+          <div className="flex sm:hidden items-center gap-1.5 rounded-full border border-white/10 bg-[#12151D] px-2 py-0.5 text-[10px] text-slate-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-mono text-white">ONNX FP32</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Runtime Status Pill */}
-          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-[#12151D] px-3 py-1 text-xs text-slate-300">
+        <div className="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto">
+          {/* Runtime Status Pill (Visible sm+) */}
+          <div className="hidden sm:flex items-center gap-2 rounded-full border border-white/10 bg-[#12151D] px-3 py-1 text-xs text-slate-300 shrink-0">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-mono text-[11px] text-slate-400">
               Engine: <span className="text-white">ONNX FP32</span> • Latency:{" "}
@@ -439,11 +447,11 @@ export default function RadiologyWorkstation() {
           </div>
 
           {/* Integrated Sample Selector Dropdown */}
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-initial min-w-[200px]">
             <select
               value={activePreset}
               onChange={(e) => handleSelectPreset(e.target.value)}
-              className="appearance-none bg-[#12151D] border border-white/10 text-xs text-white rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:border-white/30 cursor-pointer font-medium"
+              className="w-full appearance-none bg-[#12151D] border border-white/10 text-xs text-white rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:border-white/30 cursor-pointer font-medium truncate"
             >
               <option value="">Select Demo CT Scan...</option>
               <option value="Stone">Demo: Nephrolithiasis (Stone)</option>
@@ -457,33 +465,33 @@ export default function RadiologyWorkstation() {
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 p-6 flex flex-col gap-5 max-w-[1600px] w-full mx-auto">
+      <main className="flex-1 p-3 sm:p-5 lg:p-6 flex flex-col gap-4 sm:gap-5 max-w-[1600px] w-full mx-auto">
         {/* 60/40 Split 2-Column Main Analytical Workspace */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-stretch">
           {/* B. Left Column: Radiologic CT Viewport (60% width -> 7 cols on 12-col grid) */}
-          <div className="lg:col-span-7 bg-[#12151D] border border-white/10 rounded-xl p-5 flex flex-col justify-between space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
-                AXIAL RADIOLOGIC VIEWPORT // DICOM MATRIX
+          <div className="lg:col-span-7 bg-[#12151D] border border-white/10 rounded-xl p-3.5 sm:p-5 flex flex-col justify-between space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-500 uppercase truncate">
+                AXIAL RADIOLOGIC VIEWPORT // DICOM
               </span>
-              <span className="text-[11px] font-mono text-slate-400 truncate max-w-[280px]">
+              <span className="text-[10px] sm:text-[11px] font-mono text-slate-400 truncate max-w-[150px] sm:max-w-[280px]">
                 {currentFilename || "NO SLICE SELECTED"}
               </span>
             </div>
 
             {/* Edge-to-Edge Pure Black Viewport Container */}
-            <div className="bg-black rounded-xl border border-white/10 relative overflow-hidden flex items-center justify-center min-h-[440px] flex-1">
+            <div className="bg-black rounded-xl border border-white/10 relative overflow-hidden flex items-center justify-center min-h-[260px] sm:min-h-[360px] lg:min-h-[440px] flex-1">
               {/* Four HUD Corner Overlays */}
-              <div className="absolute top-3 left-3 text-[10px] font-mono tracking-wider text-white/70 bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none">
-                SERIES: AXIAL CT // {currentImage ? "LOADED" : "STANDBY"}
+              <div className="absolute top-2 sm:top-3 left-2 sm:left-3 text-[9px] sm:text-[10px] font-mono tracking-wider text-white/70 bg-black/60 px-1.5 sm:px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none z-10 max-w-[45%] truncate">
+                {currentImage ? "AXIAL CT // LOADED" : "SERIES // STANDBY"}
               </div>
-              <div className="absolute top-3 right-3 text-[10px] font-mono tracking-wider text-white/70 bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none">
-                {currentImage ? "W: 400 L: 50 // SLICE: 32/64" : "STATUS: IDLE"}
+              <div className="absolute top-2 sm:top-3 right-2 sm:right-3 text-[9px] sm:text-[10px] font-mono tracking-wider text-white/70 bg-black/60 px-1.5 sm:px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none z-10 max-w-[45%] truncate text-right">
+                {currentImage ? "W:400 L:50 // 32/64" : "STATUS: IDLE"}
               </div>
-              <div className="absolute bottom-3 left-3 text-[10px] font-mono tracking-wider text-white/70 bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none">
+              <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 text-[9px] sm:text-[10px] font-mono tracking-wider text-white/70 bg-black/60 px-1.5 sm:px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none z-10">
                 {currentImage ? "FOV: 224x224 mm" : "FOV: ---"}
               </div>
-              <div className="absolute bottom-3 right-3 text-[10px] font-mono tracking-wider text-white/70 bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none">
+              <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 text-[9px] sm:text-[10px] font-mono tracking-wider text-white/70 bg-black/60 px-1.5 sm:px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none z-10">
                 ZOOM: 100%
               </div>
 
@@ -492,17 +500,17 @@ export default function RadiologyWorkstation() {
                 <img
                   src={currentImage}
                   alt="CT Slice"
-                  className="max-h-[420px] max-w-full object-contain p-2"
+                  className="max-h-[240px] sm:max-h-[340px] lg:max-h-[420px] max-w-full object-contain p-2"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center gap-3 p-8 text-center text-slate-500">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-slate-400">
-                    <Upload className="h-5 w-5" />
+                <div className="flex flex-col items-center justify-center gap-2.5 sm:gap-3 p-6 sm:p-8 text-center text-slate-500">
+                  <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-slate-400">
+                    <Upload className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div className="space-y-1">
                     <div className="text-xs font-semibold text-slate-300">NO CT SLICE LOADED</div>
-                    <p className="text-[11px] text-slate-500 max-w-xs">
-                      Drop an axial CT image slice below or pick a demo benchmark from the header dropdown.
+                    <p className="text-[10px] sm:text-[11px] text-slate-500 max-w-xs">
+                      Drop an axial CT image slice below or pick a demo benchmark from the header.
                     </p>
                   </div>
                 </div>
@@ -510,13 +518,13 @@ export default function RadiologyWorkstation() {
             </div>
 
             {/* Input Controls */}
-            <div className="space-y-3">
+            <div className="space-y-2.5 sm:space-y-3">
               {/* Discreet Drag & Drop Target */}
               <div
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className="border border-dashed border-white/15 hover:border-white/30 bg-white/[0.02] hover:bg-white/[0.04] transition-colors rounded-lg py-2.5 px-4 text-center cursor-pointer flex items-center justify-between text-xs text-slate-400"
+                className="border border-dashed border-white/15 hover:border-white/30 bg-white/[0.02] hover:bg-white/[0.04] transition-colors rounded-lg py-2 sm:py-2.5 px-3 sm:px-4 text-center cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs text-slate-400"
               >
                 <input
                   ref={fileInputRef}
@@ -525,15 +533,15 @@ export default function RadiologyWorkstation() {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <span className="flex items-center gap-2">
-                  <Upload className="h-3.5 w-3.5 text-slate-400" />
-                  <span>
+                <span className="flex items-center gap-2 truncate">
+                  <Upload className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <span className="truncate">
                     {currentFilename
                       ? `Selected: ${currentFilename}`
-                      : "Drop CT image slice or click to browse local DICOM/JPEG"}
+                      : "Drop CT slice or click to browse local file"}
                   </span>
                 </span>
-                <span className="text-[10px] font-mono text-slate-500 uppercase">
+                <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 uppercase self-end sm:self-auto shrink-0">
                   Matrix: 224x224 Native
                 </span>
               </div>
@@ -543,7 +551,7 @@ export default function RadiologyWorkstation() {
                 type="button"
                 onClick={handleRunInference}
                 disabled={!currentImage || isAnalyzing}
-                className="w-full bg-white text-black hover:bg-slate-200 font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-xs tracking-wider uppercase disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full bg-white text-black hover:bg-slate-200 font-semibold py-2.5 sm:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-xs tracking-wider uppercase disabled:opacity-40 disabled:cursor-not-allowed shadow-sm cursor-pointer"
               >
                 {isAnalyzing ? (
                   <>
@@ -564,27 +572,27 @@ export default function RadiologyWorkstation() {
           </div>
 
           {/* C. Right Column: Clinical Differential & Findings Panel (40% width -> 5 cols on 12-col grid) */}
-          <div className="lg:col-span-5 bg-[#12151D] border border-white/10 rounded-xl p-5 flex flex-col justify-between space-y-5">
+          <div className="lg:col-span-5 bg-[#12151D] border border-white/10 rounded-xl p-3.5 sm:p-5 flex flex-col justify-between space-y-4 sm:space-y-5">
             {/* Primary Assessment Card */}
-            <div className="space-y-3 border-b border-white/10 pb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
+            <div className="space-y-2.5 sm:space-y-3 border-b border-white/10 pb-3.5 sm:pb-4">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
                   PRIMARY RADIOLOGIC ASSESSMENT
                 </span>
-                <span className={`text-[11px] font-semibold uppercase px-2.5 py-0.5 rounded ${severity.pill}`}>
+                <span className={`text-[10px] sm:text-[11px] font-semibold uppercase px-2 py-0.5 rounded shrink-0 ${severity.pill}`}>
                   {finding ? finding : "STANDBY"}
                 </span>
               </div>
 
-              <div className="flex items-baseline justify-between gap-2">
-                <h2 className="text-xl font-bold tracking-tight text-white">
+              <div className="flex items-baseline justify-between gap-3">
+                <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-snug">
                   {severity.heading}
                 </h2>
-                <div className="text-right">
-                  <span className="text-2xl font-mono font-bold tracking-tight text-white">
+                <div className="text-right shrink-0">
+                  <span className="text-xl sm:text-2xl font-mono font-bold tracking-tight text-white">
                     {confidence > 0 ? `${confidence.toFixed(1)}%` : "---%"}
                   </span>
-                  <span className="text-[10px] text-slate-500 block uppercase font-mono">
+                  <span className="text-[9px] sm:text-[10px] text-slate-500 block uppercase font-mono">
                     Certainty
                   </span>
                 </div>
@@ -592,13 +600,13 @@ export default function RadiologyWorkstation() {
             </div>
 
             {/* Differential Probability Spectrum */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
+            <div className="space-y-2.5 sm:space-y-3">
+              <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
                 <span>DIFFERENTIAL PROBABILITY SPECTRUM</span>
                 <span className="font-mono text-slate-500">4-CLASS SOFTMAX</span>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2.5 sm:space-y-3">
                 {/* 1. Normal Kidney Parenchyma */}
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
@@ -666,8 +674,8 @@ export default function RadiologyWorkstation() {
             </div>
 
             {/* Impression & Recommendations Box */}
-            <div className="rounded-lg border border-white/10 bg-[#0A0C10] p-4 space-y-1.5">
-              <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block">
+            <div className="rounded-lg border border-white/10 bg-[#0A0C10] p-3 sm:p-4 space-y-1.5">
+              <span className="text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-500 uppercase block">
                 CLINICAL IMPRESSION &amp; RECOMMENDATION
               </span>
               <p className="text-xs text-slate-300 leading-relaxed font-sans">
@@ -676,12 +684,12 @@ export default function RadiologyWorkstation() {
             </div>
 
             {/* Reporting Actions */}
-            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-white/10">
               <button
                 type="button"
                 onClick={() => window.print()}
                 disabled={!finding}
-                className="border border-white/10 hover:border-white/20 bg-white/[0.03] hover:bg-white/[0.06] text-slate-300 hover:text-white py-2 px-3 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full border border-white/10 hover:border-white/20 bg-white/[0.03] hover:bg-white/[0.06] text-slate-300 hover:text-white py-2 sm:py-2.5 px-3 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 <Download className="h-3.5 w-3.5 text-slate-400" />
                 <span>Export PDF Summary</span>
@@ -691,7 +699,7 @@ export default function RadiologyWorkstation() {
                 type="button"
                 onClick={handleCopyReport}
                 disabled={!finding}
-                className="border border-white/10 hover:border-white/20 bg-white/[0.03] hover:bg-white/[0.06] text-slate-300 hover:text-white py-2 px-3 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full border border-white/10 hover:border-white/20 bg-white/[0.03] hover:bg-white/[0.06] text-slate-300 hover:text-white py-2 sm:py-2.5 px-3 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 {copiedReport ? (
                   <>
@@ -710,29 +718,30 @@ export default function RadiologyWorkstation() {
         </div>
 
         {/* D. Bottom Tray: Session Audit Log with Select, Select All, and Delete Controls */}
-        <div className="bg-[#12151D] border border-white/10 rounded-xl p-4 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-2.5">
-            <div className="flex items-center gap-2.5">
-              <span className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
-                SESSION AUDIT LOG // RECENT CT ACQUISITIONS
+        <div className="bg-[#12151D] border border-white/10 rounded-xl p-3 sm:p-4 space-y-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/10 pb-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
+                SESSION AUDIT LOG
               </span>
+              <span className="hidden sm:inline text-slate-600">// RECENT CT ACQUISITIONS</span>
               <span className="rounded bg-white/5 border border-white/10 px-2 py-0.5 text-[10px] font-mono text-slate-400">
                 {auditRecords.length} Sessions
               </span>
               {selectedIds.length > 0 && (
-                <span className="text-[11px] text-white font-mono bg-white/10 px-2 py-0.5 rounded border border-white/10">
+                <span className="text-[10px] sm:text-[11px] text-white font-mono bg-white/10 px-2 py-0.5 rounded border border-white/10">
                   {selectedIds.length} of {auditRecords.length} selected
                 </span>
               )}
             </div>
 
             {/* Batch Action Toolbar: Select All, Delete Selected, Clear All */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <button
                 type="button"
                 onClick={handleToggleSelectAll}
                 disabled={auditRecords.length === 0}
-                className="text-xs text-slate-300 hover:text-white border border-white/10 hover:border-white/20 bg-white/[0.03] hover:bg-white/[0.06] px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 disabled:opacity-40 cursor-pointer"
+                className="text-[11px] sm:text-xs text-slate-300 hover:text-white border border-white/10 hover:border-white/20 bg-white/[0.03] hover:bg-white/[0.06] px-2 sm:px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 disabled:opacity-40 cursor-pointer"
                 title={isAllSelected ? "Deselect all rows" : "Select all rows"}
               >
                 {isAllSelected ? (
@@ -752,11 +761,11 @@ export default function RadiologyWorkstation() {
                 <button
                   type="button"
                   onClick={handleDeleteSelected}
-                  className="text-xs text-rose-400 hover:text-rose-300 border border-rose-500/30 hover:border-rose-500/50 bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 font-medium cursor-pointer"
+                  className="text-[11px] sm:text-xs text-rose-400 hover:text-rose-300 border border-rose-500/30 hover:border-rose-500/50 bg-rose-500/10 hover:bg-rose-500/20 px-2 sm:px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 font-medium cursor-pointer"
                   title="Delete all selected scans"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  <span>Delete Selected ({selectedIds.length})</span>
+                  <span>Delete ({selectedIds.length})</span>
                 </button>
               )}
 
@@ -764,7 +773,7 @@ export default function RadiologyWorkstation() {
                 <button
                   type="button"
                   onClick={handleClearAll}
-                  className="text-xs text-slate-400 hover:text-rose-400 border border-white/10 hover:border-rose-500/30 bg-white/[0.02] hover:bg-rose-500/10 px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="text-[11px] sm:text-xs text-slate-400 hover:text-rose-400 border border-white/10 hover:border-rose-500/30 bg-white/[0.02] hover:bg-rose-500/10 px-2 sm:px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer"
                   title="Wipe entire history"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -776,7 +785,7 @@ export default function RadiologyWorkstation() {
                 type="button"
                 onClick={fetchPersistedHistory}
                 disabled={isHistoryLoading}
-                className="text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.05] p-1.5 rounded transition-colors cursor-pointer"
+                className="text-[11px] sm:text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.05] p-1.5 rounded transition-colors cursor-pointer"
                 title="Refresh History from Database"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${isHistoryLoading ? "animate-spin" : ""}`} />
@@ -784,17 +793,25 @@ export default function RadiologyWorkstation() {
             </div>
           </div>
 
-          {/* Records Table */}
-          <div className="overflow-x-auto">
+          {/* Swipe indicator for mobile */}
+          {auditRecords.length > 0 && (
+            <div className="text-[10px] text-slate-500 sm:hidden flex items-center justify-between pb-1 font-mono">
+              <span>← SWIPE TABLE HORIZONTALLY →</span>
+              <span>{auditRecords.length} ROWS</span>
+            </div>
+          )}
+
+          {/* Records Table with smooth horizontal scrolling inside container */}
+          <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
             {auditRecords.length === 0 ? (
               <div className="py-8 text-center text-xs text-slate-500">
                 No session audit records found. Execute an inference to log diagnostic findings.
               </div>
             ) : (
-              <table className="w-full text-left text-xs text-slate-300">
+              <table className="w-full min-w-[650px] text-left text-xs text-slate-300">
                 <thead>
-                  <tr className="border-b border-white/5 text-[10px] font-mono uppercase text-slate-500">
-                    <th className="py-2 px-3 w-8 text-center">
+                  <tr className="border-b border-white/5 text-[10px] font-mono uppercase text-slate-500 whitespace-nowrap">
+                    <th className="py-2 px-2.5 w-8 text-center">
                       <input
                         type="checkbox"
                         checked={isAllSelected}
@@ -803,12 +820,12 @@ export default function RadiologyWorkstation() {
                         title="Select/Deselect all rows"
                       />
                     </th>
-                    <th className="py-2 px-3">Scan Identifier</th>
-                    <th className="py-2 px-3">Acquisition Time</th>
-                    <th className="py-2 px-3">Pathology Finding</th>
-                    <th className="py-2 px-3">Certainty Score</th>
-                    <th className="py-2 px-3">Session Status</th>
-                    <th className="py-2 px-3 text-right">Actions</th>
+                    <th className="py-2 px-2.5">Scan Identifier</th>
+                    <th className="py-2 px-2.5">Acquisition Time</th>
+                    <th className="py-2 px-2.5">Pathology Finding</th>
+                    <th className="py-2 px-2.5">Certainty Score</th>
+                    <th className="py-2 px-2.5">Session Status</th>
+                    <th className="py-2 px-2.5 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -824,7 +841,7 @@ export default function RadiologyWorkstation() {
                         }`}
                       >
                         {/* Checkbox */}
-                        <td className="py-2.5 px-3 text-center">
+                        <td className="py-2.5 px-2.5 text-center">
                           <input
                             type="checkbox"
                             checked={isSelected}
@@ -835,39 +852,39 @@ export default function RadiologyWorkstation() {
                         </td>
 
                         {/* Scan ID & Thumbnail */}
-                        <td className="py-2.5 px-3 font-mono text-white flex items-center gap-2">
+                        <td className="py-2.5 px-2.5 font-mono text-white flex items-center gap-2">
                           <img
                             src={record.imageUrl}
                             alt="Thumbnail"
-                            className="h-6 w-6 rounded object-cover border border-white/10"
+                            className="h-6 w-6 rounded object-cover border border-white/10 shrink-0"
                           />
-                          <span>{record.id}</span>
+                          <span className="truncate">{record.id}</span>
                         </td>
 
                         {/* Acquisition Time */}
-                        <td className="py-2.5 px-3 font-mono text-slate-400">{record.timestamp}</td>
+                        <td className="py-2.5 px-2.5 font-mono text-slate-400">{record.timestamp}</td>
 
                         {/* Pathology Finding */}
-                        <td className="py-2.5 px-3">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase ${badge.pill}`}>
+                        <td className="py-2.5 px-2.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase inline-block whitespace-nowrap ${badge.pill}`}>
                             {record.findingLabel}
                           </span>
                         </td>
 
                         {/* Certainty Score */}
-                        <td className="py-2.5 px-3 font-mono text-slate-200 font-semibold">
+                        <td className="py-2.5 px-2.5 font-mono text-slate-200 font-semibold">
                           {record.confidence.toFixed(1)}%
                         </td>
 
                         {/* Session Status */}
-                        <td className="py-2.5 px-3">
-                          <span className="text-[10px] font-mono text-slate-400 border border-white/10 px-1.5 py-0.5 rounded bg-white/[0.02]">
+                        <td className="py-2.5 px-2.5">
+                          <span className="text-[10px] font-mono text-slate-400 border border-white/10 px-1.5 py-0.5 rounded bg-white/[0.02] inline-block whitespace-nowrap">
                             {record.status}
                           </span>
                         </td>
 
                         {/* Actions: Inspect & Delete Single */}
-                        <td className="py-2.5 px-3 text-right">
+                        <td className="py-2.5 px-2.5 text-right">
                           <div className="flex items-center justify-end gap-1">
                             <button
                               type="button"
@@ -882,7 +899,7 @@ export default function RadiologyWorkstation() {
                                   setImpression(preset.impression);
                                 }
                               }}
-                              className="text-[11px] text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1 p-1 rounded hover:bg-white/5"
+                              className="text-[11px] text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1 p-1 rounded hover:bg-white/5 cursor-pointer"
                               title="Inspect slice in main viewport"
                             >
                               <Eye className="h-3 w-3" />
@@ -892,7 +909,7 @@ export default function RadiologyWorkstation() {
                             <button
                               type="button"
                               onClick={() => handleDeleteSingle(record.id)}
-                              className="text-[11px] text-slate-500 hover:text-rose-400 transition-colors p-1 rounded hover:bg-white/5"
+                              className="text-[11px] text-slate-500 hover:text-rose-400 transition-colors p-1 rounded hover:bg-white/5 cursor-pointer"
                               title={`Delete ${record.id}`}
                             >
                               <Trash2 className="h-3 w-3" />
