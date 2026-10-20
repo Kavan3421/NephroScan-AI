@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Misc
+.DS_Store
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.env
+.env*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Large Model files (user can download from Colab release / S3 / Kaggle)
+# Uncomment if model.onnx should not be checked into git
+# backend/model/model.onnx
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.agents/

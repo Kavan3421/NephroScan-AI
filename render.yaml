@@ -1,0 +1,32 @@
+# Render Blueprint Deployment Configuration
+# Optimized specifically for Render's Free Tier (512MB RAM Limit)
+# Guarantees ONNX runtime stays under ~80-100MB RAM to prevent OOM Killers
+
+services:
+  # 1. FastAPI + ONNX Runtime Backend Service
+  - type: web
+    name: kidney-ai-backend
+    env: python
+    plan: free
+    region: oregon
+    buildCommand: "pip install --upgrade pip && pip install -r backend/requirements.txt"
+    startCommand: "uvicorn main:app --app-dir backend --host 0.0.0.0 --port $PORT --workers 1 --log-level info"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.8
+      - key: DATABASE_URL
+        value: sqlite:///./kidney_ai.db
+      - key: FRONTEND_URL
+        value: "*"
+      # Crucial CPU / Memory Throttling Variables for 512MB Free Tier:
+      # Restricts internal OpenMP/MKL thread pools to 1, preventing memory and CPU spikes
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: MKL_NUM_THREADS
+        value: "1"
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"
+      - key: PYTHONDONTWRITEBYTECODE
+        value: "1"
