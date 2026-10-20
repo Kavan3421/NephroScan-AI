@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Dialog, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Printer, Download, Activity, CheckCircle, Shield } from "lucide-react";
@@ -29,7 +29,8 @@ export default function MedicalReportModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <div className="space-y-4 print:p-0 print:m-0 print:bg-white print:text-black">
+      <DialogContent className="max-w-2xl bg-slate-900 border-slate-800" onClose={onClose}>
+        <div className="space-y-4 print:p-0 print:m-0 print:bg-white print:text-black">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-3">
           <div className="flex items-center space-x-2">
@@ -130,6 +131,7 @@ export default function MedicalReportModal({
           </Button>
         </div>
       </div>
-    </Dialog>
-  );
+    </DialogContent>
+  </Dialog>
+);
 }

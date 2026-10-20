@@ -194,24 +194,11 @@ export async function getPredictionHistory(
     if (!res.ok) throw new Error("History fetch non-200");
     return await res.json();
   } catch {
-    let filtered = [...MOCK_HISTORY];
-    if (predictedClass) {
-      filtered = filtered.filter((item) => item.predicted_class === predictedClass);
-    }
-    if (search) {
-      const q = search.toLowerCase();
-      filtered = filtered.filter(
-        (i) =>
-          i.patient_id?.toLowerCase().includes(q) ||
-          i.scan_id.toLowerCase().includes(q) ||
-          i.filename.toLowerCase().includes(q)
-      );
-    }
     return {
-      total: filtered.length,
+      total: 0,
       skip,
       limit,
-      items: filtered,
+      items: [],
     };
   }
 }

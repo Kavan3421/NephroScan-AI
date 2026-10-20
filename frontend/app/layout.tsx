@@ -1,24 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import AntdProvider from "@/components/custom/AntdProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NephroScan AI | Medical CT Kidney Disease Detection System",
+  title: "NephroScan AI | Clinical Radiology Workstation",
   description:
-    "Production-grade Medical AI Diagnostic System powered by VGG16 Transfer Learning and ONNX Runtime. Automated multi-class detection across 12,446 Kaggle CT Kidney scans: Normal, Cyst, Stone, Tumor.",
-  keywords: [
-    "Kidney Disease Detection",
-    "Medical AI",
-    "CT Scan Classification",
-    "ONNX Runtime",
-    "FastAPI",
-    "Next.js",
-    "Deep Learning",
-    "Healthcare ML",
-  ],
+    "Clinical-grade Diagnostic Radiology Workstation for Kidney CT analysis powered by VGG16 Transfer Learning and ONNX Runtime.",
 };
 
 export default function RootLayout({
@@ -28,8 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} bg-slate-950 text-slate-100 min-h-screen antialiased`}>
-        <AntdProvider>{children}</AntdProvider>
+      <body
+        className={`${inter.className} bg-[#0A0C10] text-slate-100 min-h-screen antialiased selection:bg-white selection:text-black`}
+      >
+        {children}
       </body>
     </html>
   );

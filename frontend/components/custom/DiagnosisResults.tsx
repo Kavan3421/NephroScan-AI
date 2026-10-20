@@ -1,13 +1,27 @@
 "use client";
 
-import React from "react";
-import { AlertCircle, CheckCircle, ShieldAlert, Clock, Cpu, Printer, Sparkles, Activity } from "lucide-react";
+import React, { useState } from "react";
+import {
+  Activity,
+  CheckCircle2,
+  AlertTriangle,
+  FileText,
+  Clock,
+  Sparkles,
+  Maximize2,
+  Layers,
+  ChevronRight,
+  ShieldAlert,
+  ShieldCheck,
+  Stethoscope,
+  Share2,
+  Printer,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { PredictionResult } from "@/lib/api";
-import { getClassColor } from "@/lib/utils";
+import DICOMViewportModal from "@/components/custom/DICOMViewportModal";
 
 interface DiagnosisResultsProps {
   result: PredictionResult | null;
@@ -20,162 +34,292 @@ export default function DiagnosisResults({
   onOpenReport,
   isLoading,
 }: DiagnosisResultsProps) {
+  const [isDicomOpen, setIsDicomOpen] = useState(false);
+
+  // Fallback empty state
+  if (!result && !isLoading) {
+    return (
+      <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-2xl shadow-2xl relative overflow-hidden h-full flex flex-col justify-center items-center p-8 text-center border-dashed">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-800/80 text-slate-500 border border-slate-700 mb-4">
+          <Activity className="h-8 w-8 text-slate-500" />
+        </div>
+        <h3 className="text-base font-bold text-white mb-1">Awaiting Diagnostic Input</h3>
+        <p className="text-xs text-slate-400 max-w-sm mb-5 leading-relaxed">
+          Upload an axial CT scan or select a benchmark preset to generate an automated radiologic classification with multiclass probability distributions.
+        </p>
+        <div className="flex items-center gap-2 text-[11px] text-teal-400 font-mono bg-teal-500/10 px-3 py-1.5 rounded-full border border-teal-500/20">
+          <Sparkles className="h-3.5 w-3.5" />
+          <span>VGG16 Transfer Learning Ready (FP32)</span>
+        </div>
+      </Card>
+    );
+  }
+
+  // Loading skeleton state
   if (isLoading) {
     return (
-      <Card className="border-slate-800 bg-slate-900/70 backdrop-blur-md shadow-2xl flex flex-col items-center justify-center p-12 text-center space-y-4">
-        <div className="relative flex h-16 w-16 items-center justify-center">
-          <div className="absolute inset-0 rounded-full border-4 border-teal-500/20 border-t-teal-400 animate-spin" />
-          <Activity className="h-6 w-6 text-teal-400 animate-pulse" />
+      <Card className="border-teal-500/30 bg-slate-900/80 backdrop-blur-2xl shadow-2xl p-6 space-y-6 animate-pulse">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div className="space-y-2">
+            <div className="h-4 w-32 bg-slate-800 rounded" />
+            <div className="h-7 w-48 bg-slate-700 rounded" />
+          </div>
+          <div className="h-8 w-24 bg-slate-800 rounded-full" />
         </div>
-        <div>
-          <h3 className="text-base font-semibold text-white">Neural Network Active</h3>
-          <p className="text-xs text-slate-400 max-w-xs mt-1">
-            Running 224x224 tensor normalization, feature extraction, and 4-class softmax probability distribution...
-          </p>
+        <div className="space-y-3">
+          <div className="h-3 w-40 bg-slate-800 rounded" />
+          <div className="h-5 w-full bg-slate-800 rounded-full" />
+          <div className="h-5 w-full bg-slate-800 rounded-full" />
+          <div className="h-5 w-full bg-slate-800 rounded-full" />
+          <div className="h-5 w-full bg-slate-800 rounded-full" />
         </div>
       </Card>
     );
   }
 
-  if (!result) {
-    return (
-      <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-md shadow-2xl flex flex-col items-center justify-center p-12 text-center border-dashed">
-        <div className="h-14 w-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 mb-3">
-          <Sparkles className="h-6 w-6" />
-        </div>
-        <h3 className="text-sm font-semibold text-slate-300">No Scan Evaluated Yet</h3>
-        <p className="text-xs text-slate-500 max-w-xs mt-1">
-          Upload a renal CT slice or pick one of the quick presets on the left to view real-time AI classification.
-        </p>
-      </Card>
-    );
-  }
+  if (!result) return null;
 
-  const colorMeta = getClassColor(result.predicted_class);
-  const classesList = result.probabilities && Object.keys(result.probabilities).length > 0
-    ? Object.keys(result.probabilities)
-    : ["Cyst", "Normal", "Stone", "Tumor"];
+  const getVerdictTheme = (cls: string) => {
+    switch (cls) {
+      case "Normal":
+        return {
+          text: "text-emerald-400",
+          border: "border-emerald-500/40",
+          bg: "bg-emerald-500/10",
+          badge: "emerald",
+          icon: ShieldCheck,
+          accent: "from-emerald-500 to-teal-600",
+        };
+      case "Cyst":
+        return {
+          text: "text-amber-400",
+          border: "border-amber-500/40",
+          bg: "bg-amber-500/10",
+          badge: "amber",
+          icon: AlertTriangle,
+          accent: "from-amber-500 to-orange-600",
+        };
+      case "Stone":
+        return {
+          text: "text-purple-400",
+          border: "border-purple-500/40",
+          bg: "bg-purple-500/10",
+          badge: "purple",
+          icon: Activity,
+          accent: "from-purple-500 to-indigo-600",
+        };
+      case "Tumor":
+      default:
+        return {
+          text: "text-rose-400",
+          border: "border-rose-500/40",
+          bg: "bg-rose-500/10",
+          badge: "rose",
+          icon: ShieldAlert,
+          accent: "from-rose-500 to-red-600",
+        };
+    }
+  };
+
+  const theme = getVerdictTheme(result.predicted_class);
+  const VerdictIcon = theme.icon;
+
+  // The 4 core trained classes
+  const coreClasses = ["Normal", "Cyst", "Stone", "Tumor"] as const;
+
+  const currentScanImage =
+    result.image_base64_thumbnail ||
+    result.thumbnail_b64 ||
+    (result.predicted_class === "Normal"
+      ? "/samples/sample_normal.jpg"
+      : result.predicted_class === "Cyst"
+      ? "/samples/sample_cyst.jpg"
+      : result.predicted_class === "Stone"
+      ? "/samples/sample_stone.jpg"
+      : "/samples/sample_tumor.jpg");
 
   return (
-    <Card className={`border ${colorMeta.border} bg-slate-900/80 backdrop-blur-md shadow-2xl relative overflow-hidden transition-all duration-300`}>
-      {/* Top Banner with Verdict */}
-      <CardHeader className="pb-4 border-b border-slate-800/60">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-semibold tracking-wider uppercase text-slate-400">
-                Primary Diagnostic Classification
-              </span>
-              <Badge variant={result.predicted_class === "Normal" ? "emerald" : result.predicted_class === "Tumor" ? "rose" : "amber"}>
-                {result.risk_level}
-              </Badge>
+    <>
+      <Card
+        className={`border ${theme.border} bg-slate-900/70 backdrop-blur-2xl shadow-2xl relative overflow-hidden transition-all duration-300`}
+      >
+        {/* Top Verdict Header */}
+        <CardHeader className="pb-4 border-b border-slate-800/80 bg-slate-950/50">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[11px] font-bold tracking-wider uppercase text-slate-400">
+                  Primary Radiologic Classification
+                </span>
+                <Badge variant={theme.badge as any} className="text-[10px] uppercase font-bold">
+                  {result.risk_level}
+                </Badge>
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <VerdictIcon className={`h-7 w-7 ${theme.text}`} />
+                <h2 className={`text-2xl sm:text-3xl font-black tracking-tight ${theme.text}`}>
+                  {result.predicted_class}
+                </h2>
+              </div>
             </div>
-            <h2 className={`text-3xl font-extrabold tracking-tight ${colorMeta.text}`}>
-              {result.predicted_class}
-            </h2>
+
+            {/* Confidence & Latency Metric Block */}
+            <div className="flex items-center gap-3 bg-slate-950/80 px-4 py-2.5 rounded-xl border border-slate-800">
+              <div>
+                <span className="block text-[10px] text-slate-500 uppercase font-mono">
+                  Confidence
+                </span>
+                <span className="font-mono text-xl font-black text-white">
+                  {result.confidence.toFixed(1)}%
+                </span>
+              </div>
+              <div className="h-7 w-[1px] bg-slate-800" />
+              <div>
+                <span className="block text-[10px] text-slate-500 uppercase font-mono">Latency</span>
+                <span className="font-mono text-sm font-semibold text-teal-400 flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {result.inference_time_ms}ms
+                </span>
+              </div>
+            </div>
           </div>
+        </CardHeader>
 
-          <div className="flex sm:flex-col sm:items-end justify-between items-center bg-slate-950/60 px-3.5 py-2 rounded-xl border border-slate-800">
-            <span className="text-[11px] text-slate-400">Confidence Score</span>
-            <span className="text-2xl font-bold font-mono text-white">
-              {result.confidence}%
-            </span>
-          </div>
-        </div>
-      </CardHeader>
+        <CardContent className="p-5 space-y-6">
+          {/* Side-by-Side CT Viewport & Multiclass Analytics */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+            {/* Left: CT Scan Slice with Quick Viewport Launcher (5 Cols) */}
+            <div className="md:col-span-5 space-y-2.5">
+              <div className="relative aspect-square rounded-xl bg-black border border-slate-800 overflow-hidden group shadow-xl">
+                <img
+                  src={currentScanImage}
+                  alt="Current CT Slice"
+                  className="h-full w-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                />
 
-      <CardContent className="pt-5 space-y-5">
-        {/* Multiclass Probability Breakdown */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-              Multiclass Probability Breakdown (Softmax)
-            </h4>
-            <span className="text-[11px] text-slate-500 font-mono">Sum: 100.0%</span>
-          </div>
-
-          <div className="space-y-2.5">
-            {classesList.map((cls) => {
-              const score = result.probabilities ? result.probabilities[cls] || 0 : 0;
-              const isWinner = cls === result.predicted_class;
-              const barColor =
-                cls === "Normal"
-                  ? "bg-emerald-500"
-                  : cls === "Cyst"
-                  ? "bg-amber-500"
-                  : cls === "Stone"
-                  ? "bg-purple-500"
-                  : cls === "Tumor"
-                  ? "bg-rose-500"
-                  : cls === "Hydronephrosis"
-                  ? "bg-cyan-500"
-                  : cls === "Polycystic Disease"
-                  ? "bg-indigo-500"
-                  : cls === "Pyelonephritis"
-                  ? "bg-orange-500"
-                  : cls === "Renal Atrophy"
-                  ? "bg-stone-500"
-                  : "bg-teal-500";
-
-              return (
-                <div key={cls} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className={`font-medium ${isWinner ? "text-white flex items-center gap-1" : "text-slate-400"}`}>
-                      {cls}
-                      {isWinner && <CheckCircle className="h-3 w-3 text-teal-400" />}
-                    </span>
-                    <span className="font-mono text-xs text-slate-300">{score.toFixed(2)}%</span>
+                {/* DICOM Studio Launcher Hover Overlay */}
+                <div
+                  onClick={() => setIsDicomOpen(true)}
+                  className="cursor-pointer absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 text-center p-3"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500 text-slate-950 font-bold shadow-lg shadow-teal-500/30">
+                    <Maximize2 className="h-5 w-5" />
                   </div>
-                  <Progress value={score} indicatorColor={barColor} className="h-2" />
+                  <span className="text-xs font-bold text-white">Open in DICOM Viewport</span>
+                  <span className="text-[10px] text-slate-300">
+                    Zoom, Pan, Windowing &amp; Contrast
+                  </span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Clinical Recommendation Box */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-1.5">
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-200">
-            <ShieldAlert className="h-4 w-4 text-teal-400" />
-            <span>Clinical Impression &amp; Next Steps</span>
-          </div>
-          <p className="text-xs leading-relaxed text-slate-400">
-            {result.clinical_recommendation}
-          </p>
-        </div>
+                <div className="pointer-events-none absolute bottom-2 left-2 text-[10px] font-mono text-teal-400 bg-slate-950/80 px-2 py-0.5 rounded border border-teal-500/20">
+                  {result.image_dimensions || "224x224"}
+                </div>
+              </div>
 
-        {/* Scan Telemetry Footnote */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 border-t border-slate-800/60 text-[11px] text-slate-400">
-          <div>
-            <span className="block text-slate-500">Scan ID</span>
-            <span className="font-mono text-slate-300 font-medium truncate">{result.scan_id}</span>
-          </div>
-          <div>
-            <span className="block text-slate-500">Inference Latency</span>
-            <span className="font-mono text-teal-400 font-medium flex items-center gap-1">
-              <Clock className="h-3 w-3" /> {result.inference_time_ms} ms
-            </span>
-          </div>
-          <div>
-            <span className="block text-slate-500">Input Matrix</span>
-            <span className="font-mono text-slate-300">224×224 RGB</span>
-          </div>
-          <div>
-            <span className="block text-slate-500">Model Core</span>
-            <span className="font-mono text-slate-300 truncate">{result.model_version || "VGG16"}</span>
-          </div>
-        </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsDicomOpen(true)}
+                className="w-full h-8 text-xs border-slate-700 bg-slate-950/60 hover:bg-slate-800 text-slate-300 flex items-center justify-center gap-1.5"
+              >
+                <Maximize2 className="h-3.5 w-3.5 text-teal-400" />
+                <span>Interactive DICOM Studio</span>
+              </Button>
+            </div>
 
-        {/* Report Button */}
-        <Button
-          onClick={onOpenReport}
-          variant="outline"
-          className="w-full text-xs font-medium border-slate-700 hover:bg-slate-800 hover:text-white"
-        >
-          <Printer className="h-3.5 w-3.5 mr-2 text-teal-400" />
-          View Formal Medical Diagnostic Report (PDF / Print)
-        </Button>
-      </CardContent>
-    </Card>
+            {/* Right: Multiclass Confidence Progress Meters (7 Cols) */}
+            <div className="md:col-span-7 space-y-3.5">
+              <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                  <Layers className="h-3.5 w-3.5 text-teal-400" />
+                  Multiclass Softmax Distribution
+                </span>
+                <span className="text-[10px] font-mono text-slate-500">Sum: 100.0%</span>
+              </div>
+
+              <div className="space-y-2.5">
+                {coreClasses.map((cls) => {
+                  const score = result.probabilities?.[cls] ?? 0;
+                  const isWinner = cls === result.predicted_class;
+
+                  const barColors: Record<string, string> = {
+                    Normal: "bg-emerald-500",
+                    Cyst: "bg-amber-500",
+                    Stone: "bg-purple-500",
+                    Tumor: "bg-rose-500",
+                  };
+
+                  return (
+                    <div key={cls} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span
+                          className={`font-semibold flex items-center gap-1.5 ${
+                            isWinner ? "text-white" : "text-slate-400"
+                          }`}
+                        >
+                          {cls}
+                          {isWinner && <CheckCircle2 className="h-3.5 w-3.5 text-teal-400" />}
+                        </span>
+                        <span className="font-mono text-xs text-slate-200">{score.toFixed(1)}%</span>
+                      </div>
+
+                      {/* Progress Track */}
+                      <div className="h-2 w-full rounded-full bg-slate-950 border border-slate-800 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-700 ease-out ${
+                            barColors[cls] || "bg-teal-500"
+                          }`}
+                          style={{ width: `${Math.max(score, 1)}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Clinical Impression Callout */}
+              <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-300">
+                  <Stethoscope className="h-3.5 w-3.5 text-teal-400" />
+                  <span>Clinical Impression &amp; Recommendation</span>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  {result.clinical_recommendation}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Footer */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800/80">
+            <div className="text-xs text-slate-500 font-mono">
+              Scan ID: <span className="text-slate-300">{result.scan_id}</span> • Patient:{" "}
+              <span className="text-slate-300">{result.patient_id || "ANONYMOUS"}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onOpenReport}
+                className="h-8 border-teal-500/30 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 text-xs flex items-center gap-1.5"
+              >
+                <FileText className="h-3.5 w-3.5" />
+                <span>View Full Medical Report</span>
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Linked DICOM High-Res Viewport Modal */}
+      <DICOMViewportModal
+        open={isDicomOpen}
+        onClose={() => setIsDicomOpen(false)}
+        imageUrl={currentScanImage}
+        record={result}
+      />
+    </>
   );
 }
