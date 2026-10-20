@@ -60,7 +60,7 @@ export interface HealthStatus {
   classes: string[];
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL
 
 // Fallback demo mock data if backend server is not running
 const MOCK_HISTORY: PredictionResult[] = [
@@ -171,7 +171,7 @@ export async function predictCTScan(
   } catch (error: any) {
     console.error("Backend /predict endpoint error:", error);
     throw new Error(
-      error?.message || "Failed to reach AI Backend. Please ensure FastAPI server is running on http://127.0.0.1:8000"
+      error?.message || `Failed to reach AI Backend. Please ensure FastAPI server is running on ${API_BASE}`
     );
   }
 }
